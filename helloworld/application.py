@@ -44,7 +44,7 @@ def add_customer():
     data = request.data
     data_dict = json.loads(data)
     customer_uuid = (str(uuid.uuid4()))
-    data_dict['id2'] = customer_uuid
+    data_dict['id'] = customer_uuid
     print(id)
     table.put_item(Item=data_dict)
     
