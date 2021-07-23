@@ -3,7 +3,14 @@ import json
 from flask import Flask, Response
 from helloworld.flaskrun import flaskrun
 
+import requests
+from flask_cors import CORS
+
+
 application = Flask(__name__)
+# for CORS support (requirements update  + app import CORS required)
+CORS(application, resources={r"/*": {"origins": "*"}}) 
+
 
 @application.route('/', methods=['GET'])
 def get():
