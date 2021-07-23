@@ -7,7 +7,7 @@ import requests
 from flask_cors import CORS
 import boto3
 import uuid
-
+import simplejson as json #for json.dump to wirk with decimal type 
 
 
 application = Flask(__name__)
@@ -32,8 +32,9 @@ def get_customers():
     table = dynamodb.Table('customers')
     # replace table scan
     resp = table.scan()
-    print(str(resp))
-    return Response(json.dumps(str(resp['Items'])), mimetype='application/json', status=200)
+    print(resp['Items'])
+
+    return Response(json.dumps(resp['Items']), mimetype='application/json', status=200)
     #curl -i http://"localhost:8000/get_customers"
     
     
