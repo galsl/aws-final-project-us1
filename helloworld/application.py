@@ -56,6 +56,7 @@ def add_customer():
     return Response(json.dumps({'Output': 'Hello World'}), mimetype='application/json', status=200)
 #curl -i -X POST -H "Content-Type: application/json" -d '{"id": "4b53d831-838c-4a00-91ae-0fb7d671df15"}' http://localhost:8000/add_customer        
 
+
 @application.route('/delete_customer', methods=['POST'])
 def delete_customer():
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -69,9 +70,20 @@ def delete_customer():
             'id': customer_id,
         }
     )
-    print("123")
-    
+
     return Response(json.dumps({'Output': 'Hello World'}), mimetype='application/json', status=200)
+    
+    
+@application.route('/edit_customer', methods=['POST'])
+def edit_customer():
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    table = dynamodb.Table('customers')
+    data = request.data
+    data_json = json.loads(data)
+    print(id)
+    table.put_item(Item=data_json)
+    return Response(json.dumps({'Output': 'Hello World'}), mimetype='application/json', status=200)
+ 
     
 if __name__ == '__main__':
     flaskrun(application)
