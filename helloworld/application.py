@@ -107,19 +107,13 @@ def uploadImage():
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
     table = dynamodb.Table('users')
 
-    user_id = 'O31qUmAincQJByXNo5WNM9J2Ihx2'
-        
-    #req_for_image = requests.get("https://static.remove.bg/remove-bg-web/8be32deab801c5299982a503e82b025fee233bd0/assets/start-0e837dcc57769db2306d8d659f53555feb500b3c5d456879b9c843d1872e7baa.jpg", stream=True)
-    #print(req_for_image)
-    #image = req_for_image.content
-    #print(image)
-    #fo = io.BytesIO(image)
+    user_id = request.files['uid']
+    print(user_id)
 
     bucket = 'aws-project-webapp-files'
     image = request.files['image']
     s3 = boto3.resource('s3', region_name='us-east-1')
     path  = "images/%s.jpg" % user_id
-
     s3.Bucket(bucket).upload_fileobj(image, path, ExtraArgs={'ACL': 'public-read', 'ContentType': 'image/jpeg'}) 
     img = 'https://aws-project-webapp-files/'+ path
 
