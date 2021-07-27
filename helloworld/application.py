@@ -84,6 +84,63 @@ def edit_customer():
     table.put_item(Item=data_json)
     return Response(json.dumps({'Output': 'Hello World'}), mimetype='application/json', status=200)
  
+
+@application.route('/sns', methods=['GET'])
+def sns():
+    sns = boto3.client("sns", region_name="us-east-1")
+    #response = sns.create_topic(Name="topic_name")
+    topic_arn ="arn:aws:sns:us-east-1:332983652655:topic_name"
+    print(topic_arn)
+
+    # sns.delete_topic(TopicArn="arn:aws:sns:us-east-1:332983652655:topic_name")
+
+    #response = sns.subscribe(TopicArn=topic_arn, Protocol="SMS", Endpoint="+972546481127")
+    #subscription_arn = response["SubscriptionArn"]
+    #print(subscription_arn)
+
+# Create email subscription
+    #response = sns.subscribe(TopicArn=topic_arn, Protocol="email", Endpoint="evgitm@gmail.com")
+    #subscription_arn = response["SubscriptionArn"]
     
+    sns.publish(TopicArn=topic_arn, 
+            Message="message text", 
+            Subject="subject used in emails only")
+
+    return Response(json.dumps({'Output': 'Hello World'}), mimetype='application/json', status=200)
+    
+    
+    
+    
+    
+@application.route('/uploadImage', methods=['POST'])
+def uploadImage():
+    
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    table = dynamodb.Table('users')
+    
+    data = request.data
+    data_json = json.loads(data)
+    user_id = data_json['uid']
+        
+
+    bucket = 'aws-project-webapp-files'
+    image = request.files['image']
+    s3 = boto3.resource('s3', region_name='us-east-1')
+    path  = "images/%s.jpg" % user_id
+
+    s3.Bucket(bucket).upload_fileobj(image, path, ExtraArgs={'ACL': 'public-read', 'ContentType': 'image/jpeg'}) 
+    img = 'https://aws-project-webapp-files/'+ path
+
+
+    table.put_item(Item = {
+        'uid': user_id,
+        'img': img
+        
+    })
+    
+    
+    return {"img_path": "yes"}
+ 
+     
 if __name__ == '__main__':
     flaskrun(application)
