@@ -7,11 +7,10 @@ import requests
 from flask_cors import CORS
 import boto3
 import uuid
-import simplejson as json #for json.dump to wirk with decimal type 
+import simplejson as json #for json.dump to wםrk with decimal type 
 
 
 application = Flask(__name__)
-# for CORS support (requirements update  + app import CORS required)
 CORS(application, resources={r"/*": {"origins": "*"}}) 
 
 
@@ -30,7 +29,6 @@ def get_customers():
     data = request.get_json()
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
     table = dynamodb.Table('customers')
-    # replace table scan
     resp = table.scan()
     print(resp['Items'])
 
@@ -88,19 +86,9 @@ def edit_customer():
 @application.route('/sns', methods=['GET'])
 def sns():
     sns = boto3.client("sns", region_name="us-east-1")
-    #response = sns.create_topic(Name="topic_name")
     topic_arn ="arn:aws:sns:us-east-1:332983652655:topic_name"
     print(topic_arn)
 
-    # sns.delete_topic(TopicArn="arn:aws:sns:us-east-1:332983652655:topic_name")
-
-    #response = sns.subscribe(TopicArn=topic_arn, Protocol="SMS", Endpoint="+972546481127")
-    #subscription_arn = response["SubscriptionArn"]
-    #print(subscription_arn)
-
-# Create email subscription
-    #response = sns.subscribe(TopicArn=topic_arn, Protocol="email", Endpoint="evgitm@gmail.com")
-    #subscription_arn = response["SubscriptionArn"]
     
     sns.publish(TopicArn=topic_arn, 
             Message="message text", 
