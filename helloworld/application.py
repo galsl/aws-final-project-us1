@@ -108,7 +108,7 @@ def uploadImage():
     
     data = request.data
     data_json = json.loads(data)
-    user_id = data_json['uid']
+    user_id = 'O31qUmAincQJByXNo5WNM9J2Ihx2'
         
 
     bucket = 'aws-project-webapp-files'
