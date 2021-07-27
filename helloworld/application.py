@@ -105,10 +105,10 @@ def uploadImage():
     bucket = 'aws-project-webapp-files'
     image = request.files['image']
     s3 = boto3.resource('s3', region_name='us-east-1')
-    path  = "images/%s.jpg" % "HVH"
+    path  = "images/%s.jpg" %  (str(uuid.uuid4()))
     
     s3.Bucket(bucket).upload_fileobj(image, path, ExtraArgs={'ACL': 'public-read', 'ContentType': 'image/jpeg'}) 
-    img = 'https://aws-project-webapp-files.s3.amazonaws.com//'+ path
+    img = 'https://aws-project-webapp-files.s3.amazonaws.com/'+ path
     return {"img": img}
  
 @application.route('/uploadImageDB', methods=['POST'])
