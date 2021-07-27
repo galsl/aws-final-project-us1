@@ -46,7 +46,6 @@ def add_customer():
     print(data)
 
     print(request.get_json())
-    print("sad")
 
     customer_uuid = (str(uuid.uuid4()))
     data_json['id'] = customer_uuid
@@ -103,30 +102,33 @@ def sns():
     
 @application.route('/uploadImage', methods=['POST'])
 def uploadImage():
-    
-    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-    table = dynamodb.Table('users')
-
-    user_id = 'O31qUmAincQJByXNo5WNM9J2Ihx2'
-        
     bucket = 'aws-project-webapp-files'
     image = request.files['image']
     s3 = boto3.resource('s3', region_name='us-east-1')
-    path  = "images/%s.jpg" % user_id
-
+    path  = "images/%s.jpg" % "HVH"
+    
     s3.Bucket(bucket).upload_fileobj(image, path, ExtraArgs={'ACL': 'public-read', 'ContentType': 'image/jpeg'}) 
     img = 'https://aws-project-webapp-files/'+ path
-
+    return {"img": img}
+ 
+@application.route('/uploadImageDB', methods=['POST'])
+def uploadImageDB():
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    table = dynamodb.Table('users')
+    data = request.data
+    data_json = json.loads(data)
+    user_id = data_json['uid']
+    img = data_json['img']
 
     table.put_item(Item = {
         'uid': user_id,
         'img': img
         
     })
-    
-    
-    return {"img_path": "yes"}
- 
+    return Response(json.dumps( {"success": "true"}), mimetype='application/json', status=200)
+
+
+     
      
 if __name__ == '__main__':
     flaskrun(application)
