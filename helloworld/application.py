@@ -106,9 +106,7 @@ def uploadImage():
     
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
     table = dynamodb.Table('users')
-    
-    data = request.data
-    data_json = json.loads(data)
+
     user_id = 'O31qUmAincQJByXNo5WNM9J2Ihx2'
         
     #req_for_image = requests.get("https://static.remove.bg/remove-bg-web/8be32deab801c5299982a503e82b025fee233bd0/assets/start-0e837dcc57769db2306d8d659f53555feb500b3c5d456879b9c843d1872e7baa.jpg", stream=True)
