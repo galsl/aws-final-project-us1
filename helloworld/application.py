@@ -35,7 +35,7 @@ def get_customers():
     table = dynamodb.Table('customers')
 
     respponse = table.get_item(Key={
-            'uid': uid,
+            'user_id': uid,
     })
     
     return Response(json.dumps(respponse['Items']), mimetype='application/json', status=200)
