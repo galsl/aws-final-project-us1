@@ -25,7 +25,7 @@ def post():
     
     
     
-@application.route('/get_customers', methods=['GET'])
+@application.route('/get_customers', methods=['POST'])
 def get_customers():
     data = request.data
     data_json = json.loads(data)
