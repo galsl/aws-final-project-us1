@@ -9,6 +9,8 @@ import boto3
 import uuid
 import simplejson as json #for json.dump to wםrk with decimal type 
 import io 
+from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Attr
 
 
 application = Flask(__name__)
@@ -33,12 +35,12 @@ def get_customers():
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
     
     table = dynamodb.Table('customers')
+    resp = table.scan(FilterExpression = Attr('user_id').eq(uid)
 
-    respponse = table.get_item(Key={
-            'user_id': uid,
-    })
-    
-    return Response(json.dumps(respponse['Items']), mimetype='application/json', status=200)
+        )
+    print(resp['Items'])
+
+    return Response(json.dumps(resp['Items']), mimetype='application/json', status=200)
     #curl -i http://"localhost:8000/get_customers"
     
     
