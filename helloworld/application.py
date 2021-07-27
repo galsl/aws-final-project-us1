@@ -107,7 +107,7 @@ def uploadImage():
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
     table = dynamodb.Table('users')
 
-    user_id = request.files['uid']
+    user_id = 'O31qUmAincQJByXNo5WNM9J2Ihx2'
         
     bucket = 'aws-project-webapp-files'
     image = request.files['image']
