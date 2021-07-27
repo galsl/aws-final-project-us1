@@ -128,7 +128,27 @@ def uploadImageDB():
     return Response(json.dumps( {"success": "true"}), mimetype='application/json', status=200)
 
 
-     
+@application.route('/getUserImage', methods=['POST'])
+def getUserImage():
+    data = request.data
+    data_json = json.loads(data)
+    uid = data_json['uid']
+
+    print(uid)
+
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    table = dynamodb.Table('users')
+    respponse = table.get_item(Key={
+            'uid': uid,
+    })
+    
+    img = respponse['Item']['img']
+    print(img)
+
+
+    return Response(json.dumps({"img": img}), mimetype='application/json', status=200)
+    #curl -i http://"localhost:8000/get_customers"
+    
      
 if __name__ == '__main__':
     flaskrun(application)
