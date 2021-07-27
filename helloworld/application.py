@@ -27,13 +27,18 @@ def post():
     
 @application.route('/get_customers', methods=['GET'])
 def get_customers():
-    data = request.get_json()
+    data = request.data
+    data_json = json.loads(data)
+    uid = data_json['uid']    
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    
     table = dynamodb.Table('customers')
-    resp = table.scan()
-    print(resp['Items'])
 
-    return Response(json.dumps(resp['Items']), mimetype='application/json', status=200)
+    respponse = table.get_item(Key={
+            'uid': uid,
+    })
+    
+    return Response(json.dumps(respponse['Items']), mimetype='application/json', status=200)
     #curl -i http://"localhost:8000/get_customers"
     
     
