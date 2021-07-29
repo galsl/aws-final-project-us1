@@ -90,18 +90,47 @@ def edit_customer():
     return Response(json.dumps({'Output': 'Hello World'}), mimetype='application/json', status=200)
  
 
-@application.route('/sns', methods=['GET'])
+@application.route('/sns', methods=['POST'])
 def sns():
+    data = request.data
+    data_json = json.loads(data)
+    email = data_json['email']
+    print(type(email))
+
     sns = boto3.client("sns", region_name="us-east-1")
-    topic_arn ="arn:aws:sns:us-east-1:332983652655:topic_name"
-    print(topic_arn)
+    topic_name = ("%s" % (str(uuid.uuid4())))
+
+
+    response = sns.create_topic(Name= ("%s" % (str(uuid.uuid4()))))
+    topic_arn = response["TopicArn"]    
+
+    response = sns.subscribe(TopicArn=topic_arn, Protocol="email", Endpoint=email)
+    subscription_arn = response["SubscriptionArn"]
+
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    table = dynamodb.Table('users')
+    data = request.data
+    data_json = json.loads(data)
+    user_id = data_json['uid']
+    print(user_id)
+
+    table.update_item(
+     Key={
+            'uid': user_id
+        },
+        UpdateExpression='SET topic_arn = :topic_arn',
+        ExpressionAttributeValues={
+            ':topic_arn': topic_arn
+        }
+)
+    print(subscription_arn)
 
     
-    sns.publish(TopicArn=topic_arn, 
+    '''sns.publish(TopicArn=topic_arn, 
             Message="message text", 
-            Subject="subject used in emails only")
+            Subject="subject used in emails only")'''
 
-    return Response(json.dumps({'Output': 'Hello World'}), mimetype='application/json', status=200)
+    return Response(json.dumps({'Output': 'true'}), mimetype='application/json', status=200)
     
     
     
@@ -118,6 +147,8 @@ def uploadImage():
     img = 'https://aws-project-webapp-files.s3.amazonaws.com/'+ path
     return {"img": img}
  
+
+
 @application.route('/uploadImageDB', methods=['POST'])
 def uploadImageDB():
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -135,6 +166,7 @@ def uploadImageDB():
     return Response(json.dumps( {"success": "true"}), mimetype='application/json', status=200)
 
 
+
 @application.route('/getUserImage', methods=['POST'])
 def getUserImage():
     data = request.data
@@ -150,10 +182,12 @@ def getUserImage():
     })
     
     img = respponse['Item']['img']
+    topic_arn = respponse['Item']['topic_arn']
+
     print(img)
 
 
-    return Response(json.dumps({"img": img}), mimetype='application/json', status=200)
+    return Response(json.dumps({"img": img, "topic_arn": topic_arn}), mimetype='application/json', status=200)
     #curl -i http://"localhost:8000/get_customers"
     
      
