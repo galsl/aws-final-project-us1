@@ -11,6 +11,7 @@ import simplejson as json #for json.dump to wםrk with decimal type
 import io 
 from boto3.dynamodb.conditions import Key
 from boto3.dynamodb.conditions import Attr
+from datetime import datetime
 
 
 application = Flask(__name__)
@@ -145,12 +146,13 @@ def send_email():
     })
     
     topic_arn = respponse['Item']['topic_arn']
-
-    sns.publish(TopicArn=topic_arn, 
-            Message="message text", 
-            Subject="subject used in emails on12l")
-    return Response(json.dumps({"success": topic_arn}), mimetype='application/json', status=200)
+    date = datetime.now()
+    formatted_date= date.strftime("%d/%m/%Y  %H:%M:%S")
     
+    sns.publish(TopicArn=topic_arn, 
+            Message= "our recors show that you logged in at: %s" % formatted_date, 
+            Subject="CREDIT ONE: LOGIN")
+    return Response(json.dumps({"success": topic_arn}), mimetype='application/json', status=200)
     
     
        
