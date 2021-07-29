@@ -90,6 +90,8 @@ def edit_customer():
     return Response(json.dumps({'Output': 'Hello World'}), mimetype='application/json', status=200)
  
 
+
+
 @application.route('/sns', methods=['POST'])
 def sns():
     data = request.data
@@ -147,7 +149,7 @@ def send_email():
 
     sns.publish(TopicArn=topic_arn, 
             Message="message text", 
-            Subject="subject used in emails only11")
+            Subject="subject used in emails onl")
 
   
     return Response(json.dumps({"success": "true"}), mimetype='application/json', status=200)
@@ -170,47 +172,25 @@ def uploadImage():
  
 
 
-@application.route('/updateUser', methods=['POST'])
-def updateUser():
+@application.route('/uploadImageDB', methods=['POST'])
+def uploadImageDB():
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
     table = dynamodb.Table('users')
     data = request.data
     data_json = json.loads(data)
     user_id = data_json['uid']
     img = data_json['img']
-    email = data_json['email']
-    print(user_id)
     print(img)
-    print(email)
-
-
-    sns = boto3.client("sns", region_name="us-east-1")
-    topic_name = ("%s" % (str(uuid.uuid4())))
-
-
-    response = sns.create_topic(Name= (topic_name))
-    topic_arn = response["TopicArn"]    
-    print(topic_arn)
-
-    response = sns.subscribe(TopicArn=topic_arn, Protocol="email", Endpoint=email)
-    subscription_arn = response["SubscriptionArn"]
-
-    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-    table = dynamodb.Table('users')
 
     table.update_item(
      Key={
             'uid': user_id
         },
-        UpdateExpression='SET topic_arn = :topic_arn, img = :img',
+        UpdateExpression='SET img = :img',
         ExpressionAttributeValues={
-            ':topic_arn': topic_arn,
-            ':img': img        
-            
+            ':img': img
         }
 )
-    print(subscription_arn)
-    
     return Response(json.dumps( {"success": "true"}), mimetype='application/json', status=200)
 
 
