@@ -146,7 +146,9 @@ def send_email():
     
     topic_arn = respponse['Item']['topic_arn']
 
-  
+    sns.publish(TopicArn=topic_arn, 
+            Message="message text", 
+            Subject="subject used in emails on12l")
     return Response(json.dumps({"success": topic_arn}), mimetype='application/json', status=200)
     
     
