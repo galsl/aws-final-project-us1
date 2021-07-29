@@ -134,25 +134,9 @@ def send_email():
     data_json = json.loads(data)
     user_id = data_json['uid']
 
-    sns = boto3.client("sns", region_name="us-east-1")
-
-    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-    table = dynamodb.Table('users')
-    print(user_id)
-    
-    table = dynamodb.Table('users')
-    respponse = table.get_item(Key={
-            'uid': user_id,
-    })
-    
-    topic_arn = respponse['Item']['topic_arn']
-
-    sns.publish(TopicArn=topic_arn, 
-            Message="message text", 
-            Subject="subject used in emails on12l")
 
   
-    return Response(json.dumps({"success": "true"}), mimetype='application/json', status=200)
+    return Response(json.dumps({"success": user_id}), mimetype='application/json', status=200)
     
     
     
