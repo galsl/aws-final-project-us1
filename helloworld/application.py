@@ -95,6 +95,8 @@ def sns():
     data = request.data
     data_json = json.loads(data)
     email = data_json['email']
+    user_id = data_json['uid']
+
     print(type(email))
 
     sns = boto3.client("sns", region_name="us-east-1")
@@ -109,10 +111,6 @@ def sns():
 
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
     table = dynamodb.Table('users')
-    data = request.data
-    data_json = json.loads(data)
-    user_id = data_json['uid']
-    print(user_id)
 
     table.update_item(
      Key={
@@ -125,15 +123,38 @@ def sns():
 )
     print(subscription_arn)
 
+    return Response(json.dumps({"success": "true"}), mimetype='application/json', status=200)
     
-    '''sns.publish(TopicArn=topic_arn, 
-            Message="message text", 
-            Subject="subject used in emails only")'''
+    
+@application.route('/send_email', methods=['POST'])
+def send_email():
+    data = request.data
+    data_json = json.loads(data)
+    user_id = data_json['uid']
 
-    return Response(json.dumps({'Output': 'true'}), mimetype='application/json', status=200)
+    sns = boto3.client("sns", region_name="us-east-1")
+
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    table = dynamodb.Table('users')
+    print(user_id)
+    
+    table = dynamodb.Table('users')
+    respponse = table.get_item(Key={
+            'uid': user_id,
+    })
+    
+    topic_arn = respponse['Item']['topic_arn']
+
+    sns.publish(TopicArn=topic_arn, 
+            Message="message text", 
+            Subject="subject used in emails only")
+
+  
+    return Response(json.dumps({"success": "true"}), mimetype='application/json', status=200)
     
     
     
+       
     
     
 @application.route('/uploadImage', methods=['POST'])
@@ -182,12 +203,11 @@ def getUserImage():
     })
     
     img = respponse['Item']['img']
-    topic_arn = respponse['Item']['topic_arn']
 
     print(img)
 
 
-    return Response(json.dumps({"img": img, "topic_arn": topic_arn}), mimetype='application/json', status=200)
+    return Response(json.dumps({"img": img}), mimetype='application/json', status=200)
     #curl -i http://"localhost:8000/get_customers"
     
      
