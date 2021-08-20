@@ -90,6 +90,27 @@ def edit_customer():
     return Response(json.dumps({'Output': 'Hello World'}), mimetype='application/json', status=200)
  
 
+@application.route('/predict', methods=['POST'])
+def predict():
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    table = dynamodb.Table('customers')
+    data = request.data
+    data_json = json.loads(data, parse_float=Decimal)
+    customer_id = data_json['id']
+    predict = data_json['predict']
+
+    table.update_item(
+    Key={
+            'id': customer_id
+        },
+        UpdateExpression='SET predict = :predict',
+        ExpressionAttributeValues={
+            ':predict': predict
+        }
+)
+
+    return Response(json.dumps({'Output': 'Hello World'}), mimetype='application/json', status=200)
+ 
 
 
 @application.route('/sns', methods=['POST'])
