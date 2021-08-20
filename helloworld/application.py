@@ -2,7 +2,6 @@
 import json
 from flask import Flask, Response, request
 from helloworld.flaskrun import flaskrun
-
 import requests
 from flask_cors import CORS
 import boto3
@@ -12,10 +11,12 @@ import io
 from boto3.dynamodb.conditions import Key
 from boto3.dynamodb.conditions import Attr
 from datetime import datetime
+from decimal import Decimal
 
 
 application = Flask(__name__)
 CORS(application, resources={r"/*": {"origins": "*"}}) 
+
 
 
 @application.route('/', methods=['GET'])
@@ -50,14 +51,12 @@ def add_customer():
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
     table = dynamodb.Table('customers')
     data = request.data
-    data_json = json.loads(data)
+    data_json = json.loads(data, parse_float=Decimal)
     print(data)
-
-    print(request.get_json())
-
+    print(data_json)
     customer_uuid = (str(uuid.uuid4()))
     data_json['id'] = customer_uuid
-    print(id)
+    print(customer_uuid)
     table.put_item(Item=data_json)
     return Response(json.dumps({'Output': 'Hello World'}), mimetype='application/json', status=200)
 #curl -i -X POST -H "Content-Type: application/json" -d '{"id": "4b53d831-838c-4a00-91ae-0fb7d671df15"}' http://localhost:8000/add_customer        
